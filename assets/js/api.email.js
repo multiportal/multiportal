@@ -12,7 +12,7 @@ var year = dt.getFullYear();
 var fecha = year + '-' + mon + '-' + day;
 
 console.log('/* VARIABLES CONSTANTES*/');
-const {protocol, host, origin, pathname, href} = loc;
+const {host, origin, pathname, href} = loc;
 //const {protocol, pathname, href} = loc; //LOCALHOST
 //console.log('protocol='+protocol);
 //console.log('host='+host);
@@ -31,14 +31,15 @@ var path_root = (host == 'localhost') ? 'MisSitios/' + proyecto + '/' : '';
 //console.log('path_root='+path_root);
 var page_url = dominio + path_root;
 //console.log('page_url='+page_url);
-const apiEmail = (host != 'localhost') ? 'https://apirestm.000webhostapp.com/api/email/' : page_url+'api/email/';
+//const apiEmail = (host != 'localhost') ? 'https://apirestm.000webhostapp.com/api/email/' : page_url+'api/email/';
+const apiEmail = 'https://apirestm.000webhostapp.com/api/email/';
 console.log('apiEmail='+apiEmail);
 
 console.log('javascript funcionando');
 const formulario = document.getElementById('form-1');
 if (formulario){formulario.addEventListener('submit', btnEnviar);}
 
-function btnEnviar(e) {
+async function btnEnviar(e) {
     e.preventDefault();
     let dataToSend = serialize('#form-1');
     const data = {dataToSend};
@@ -60,6 +61,10 @@ function btnEnviar(e) {
     }
     console.log(datos);
     const url = apiEmail + 'index.php'; //console.log(url);
+
+    await postFetch(url,datos);
+    //await postAxios(url,datos);
+/*
     fetch(url,{
         method: 'POST',
         headers: {
@@ -82,7 +87,40 @@ function btnEnviar(e) {
     .catch(err => {
         console.log(err);
     });
+    */
 }
+
+const postFetch = async (url, data) => {
+    try {
+        const response = await fetch(url,{
+            method: 'POST',
+            headers: {
+                'Content-Type':'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        const res = await response.json();
+        console.log(res);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const postAxios = async (url, data) => {
+    try {
+        const response = await axios(url,{
+            method: 'POST',
+            headers: {
+                'Content-Type':'application/json'
+            },
+            data
+        });
+        //const res = await response.json();
+        console.log(response);
+    } catch (error) {
+        console.log(error);
+    }
+} 
 
 function serialize(form) {
     return Array.from(document.querySelector(form).querySelectorAll("input, textarea")).map(el => {
